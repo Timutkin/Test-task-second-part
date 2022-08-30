@@ -33,7 +33,7 @@ class IEmployeeServiceIntegrationTest {
 
     private static final String FAKE_POSITION = "Owner";
 
-    private static final int PATH_SIZE = 10;
+    private static final int BATCH_SIZE = 10;
 
     @BeforeEach
     void setUpData(){
@@ -61,7 +61,7 @@ class IEmployeeServiceIntegrationTest {
         List<Employee> listEmployeeBySurname =
                 employeeService.listEmployeeBySurname(SURNAME);
         assertThat(listEmployeeBySurname)
-                .hasSizeLessThan(PATH_SIZE+1)
+                .hasSizeLessThan(BATCH_SIZE+1)
                 .filteredOn(employee -> employee.getSurname().equals(SURNAME));
 
     }
@@ -79,7 +79,7 @@ class IEmployeeServiceIntegrationTest {
                 employeeService.listEmployeeByPosition(POSITION);
 
         assertThat(listEmployeeByPosition)
-                .hasSizeLessThan(PATH_SIZE+1)
+                .hasSizeLessThan(BATCH_SIZE+1)
                 .filteredOn(employee -> employee.getPosition().equals(POSITION));
 
     }

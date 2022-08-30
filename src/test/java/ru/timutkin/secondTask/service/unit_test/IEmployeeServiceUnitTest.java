@@ -8,9 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.internal.verification.VerificationModeFactory;
-import org.mockito.verification.VerificationMode;
+import org.mockito.MockitoAnnotations;
 import ru.timutkin.secondTask.model.Employee;
 import ru.timutkin.secondTask.service.EmployeeService;
 import ru.timutkin.secondTask.service.IEmployeeService;
@@ -20,6 +18,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -29,11 +28,14 @@ public class IEmployeeServiceUnitTest {
 
     EmployeeService employeeService;
 
+    @Mock
     List<Employee> employees;
 
     private static final String SURNAME = "Utkin";
 
-    private static final int PATH_SIZE = 10;
+    private static final String POSITION = "Sales";
+
+    private static final int BATCH_SIZE = 10;
 
     private static Employee EMPLOYEE = Employee.builder()
             .id("1")
@@ -42,6 +44,7 @@ public class IEmployeeServiceUnitTest {
             .patronymic("Sergeevich")
             .position("Developer")
             .build();
+
 
     private static List<Employee> FAKE_EMPLOYEES = new ArrayList<>();
 
@@ -77,7 +80,7 @@ public class IEmployeeServiceUnitTest {
 
     @BeforeEach
     void initEmployeeService(){
-        employees = mock(ArrayList.class);
+        MockitoAnnotations.openMocks(this);
         employeeService = new IEmployeeService(employees);
     }
 
@@ -104,28 +107,47 @@ public class IEmployeeServiceUnitTest {
     }
 
     @Test
-    @Disabled
-    void listEmployeeBySurname() {
-//        employees = spy(ArrayList.class);
-//        doReturn(fakeEmployees).when(employees).stream()
-//                .filter(employee -> employee.getSurname().equals(SURNAME))
-//                .limit(10)
-//                .collect(Collectors.toList());
-//        List<Employee> employeeListBySurname =
-//                employeeService.listEmployeeBySurname(Mockito.anyString());
-//        assertThat(employeeListBySurname)
-//                .hasSizeLessThan(PATH_SIZE+1)
-//                .filteredOn(employee -> employee.getPosition().equals(SURNAME));
+    void listEmployeeBySurnameTest() {
+        EmployeeService service = getFakeIEmployeeService();
+        List<Employee> employeeBySurname =
+                service.listEmployeeBySurname(SURNAME);
+
+        assertThat(employeeBySurname)
+                .hasSizeLessThan(BATCH_SIZE+1)
+                .filteredOn(employee -> employee.getSurname().equals(SURNAME));
+
     }
 
     @Test
-    void listEmployeeByPosition() {
+    void listEmployeeByPositionTest() {
+        EmployeeService service = getFakeIEmployeeService();
+        List<Employee> employeesByPosition = service.listEmployeeByPosition(POSITION);
+
+        assertThat(employeesByPosition)
+                .hasSizeLessThan(BATCH_SIZE+1)
+                .filteredOn(employee -> employee.getPosition().equals(POSITION));
     }
 
     @Test
-    void deleteById() {
+    void deleteByIdTest() {
+        List<Employee> fakeEmployee = new ArrayList<>();
+        fakeEmployee.add(FAKE_EMPLOYEES.get(0));
+        fakeEmployee.add(FAKE_EMPLOYEES.get(1));
+        fakeEmployee.add(FAKE_EMPLOYEES.get(2));
+        EmployeeService service = new IEmployeeService(fakeEmployee);
 
-
+        service.deleteById(FAKE_EMPLOYEES.get(0).getId());
+        boolean isContain = fakeEmployee.contains(EMPLOYEE);
+        assertThat(isContain).isFalse();
     }
+
+    private EmployeeService getFakeIEmployeeService(){
+        List<Employee> fakeEmployee = new ArrayList<>();
+        fakeEmployee.add(FAKE_EMPLOYEES.get(0));
+        fakeEmployee.add(FAKE_EMPLOYEES.get(1));
+        fakeEmployee.add(FAKE_EMPLOYEES.get(2));
+        return new IEmployeeService(fakeEmployee);
+    }
+
 
 }

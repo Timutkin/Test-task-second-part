@@ -8,6 +8,8 @@ import java.util.stream.Collectors;
 
 @AllArgsConstructor
 public class IEmployeeService implements EmployeeService{
+    public static void main(String[] args) {
+    }
 
     private List<Employee> employees = new ArrayList<>();
 
